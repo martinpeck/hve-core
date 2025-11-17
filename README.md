@@ -29,6 +29,10 @@ HVE Core provides a unified set of optimized GitHub Copilot and Microsoft 365 Co
 * VS Code with GitHub Copilot extension
 * Node.js and npm (for development and validation)
 
+### Setup
+
+To use HVE Core's GitHub Copilot customizations in your project, clone this repository as a sibling to your project and configure a multi-root workspace. See the [Getting Started Guide](docs/getting-started.md) for step-by-step instructions.
+
 ### Using Chat Modes
 
 Invoke specialized AI assistants directly in GitHub Copilot Chat:
@@ -102,4 +106,7 @@ This project is licensed under the [MIT License](./LICENSE).
 
 ---
 
-🤖 Crafted with precision by ✨Copilot following brilliant human instruction, then carefully refined by our team of discerning human reviewers.
+<!-- markdownlint-disable MD036 -->
+*🤖 Crafted with precision by ✨Copilot following brilliant human instruction,
+then carefully refined by our team of discerning human reviewers.*
+<!-- markdownlint-enable MD036 -->
