@@ -40,6 +40,9 @@ param(
     [switch]$EnableSchemaValidation,
 
     [Parameter(Mandatory = $false)]
+    [string[]]$FooterExcludePaths = @(),
+
+    [Parameter(Mandatory = $false)]
     [switch]$SkipFooterValidation
 )
 
@@ -464,6 +467,11 @@ function Test-FrontmatterValidation {
     .PARAMETER EnableSchemaValidation
     Enable JSON Schema validation (advisory only).
 
+    .PARAMETER FooterExcludePaths
+    Array of wildcard patterns for files to exclude from footer validation only.
+    Uses PowerShell -like operator for matching against relative paths.
+    Path separators are normalized to forward slashes for cross-platform support.
+
     .OUTPUTS
     ValidationSummary from FrontmatterValidation module.
     #>
@@ -476,6 +484,7 @@ function Test-FrontmatterValidation {
         [switch]$ChangedFilesOnly,
         [string]$BaseBranch = "origin/main",
         [switch]$EnableSchemaValidation,
+        [string[]]$FooterExcludePaths = @(),
         [switch]$SkipFooterValidation
     )
 
@@ -550,7 +559,7 @@ function Test-FrontmatterValidation {
     Write-Host "Found $($resolvedFiles.Count) total markdown files to validate" -ForegroundColor Cyan
 
     # Use module's orchestration function for core validation
-    $summary = Invoke-FrontmatterValidation -Files $resolvedFiles -RepoRoot $repoRoot -SkipFooterValidation:$SkipFooterValidation
+    $summary = Invoke-FrontmatterValidation -Files $resolvedFiles -RepoRoot $repoRoot -FooterExcludePaths $FooterExcludePaths -SkipFooterValidation:$SkipFooterValidation
 
     # Optional schema validation overlay (advisory only)
     # Uses frontmatter already parsed by Invoke-FrontmatterValidation
@@ -726,13 +735,13 @@ function Get-ChangedMarkdownFileGroup {
 try {
     if ($MyInvocation.InvocationName -ne '.') {
         if ($ChangedFilesOnly) {
-            $result = Test-FrontmatterValidation -ChangedFilesOnly -BaseBranch $BaseBranch -ExcludePaths $ExcludePaths -WarningsAsErrors:$WarningsAsErrors -EnableSchemaValidation:$EnableSchemaValidation -SkipFooterValidation:$SkipFooterValidation
+            $result = Test-FrontmatterValidation -ChangedFilesOnly -BaseBranch $BaseBranch -ExcludePaths $ExcludePaths -WarningsAsErrors:$WarningsAsErrors -EnableSchemaValidation:$EnableSchemaValidation -FooterExcludePaths $FooterExcludePaths -SkipFooterValidation:$SkipFooterValidation
         }
         elseif ($Files.Count -gt 0) {
-            $result = Test-FrontmatterValidation -Files $Files -ExcludePaths $ExcludePaths -WarningsAsErrors:$WarningsAsErrors -EnableSchemaValidation:$EnableSchemaValidation -SkipFooterValidation:$SkipFooterValidation
+            $result = Test-FrontmatterValidation -Files $Files -ExcludePaths $ExcludePaths -WarningsAsErrors:$WarningsAsErrors -EnableSchemaValidation:$EnableSchemaValidation -FooterExcludePaths $FooterExcludePaths -SkipFooterValidation:$SkipFooterValidation
         }
         else {
-            $result = Test-FrontmatterValidation -Paths $Paths -ExcludePaths $ExcludePaths -WarningsAsErrors:$WarningsAsErrors -EnableSchemaValidation:$EnableSchemaValidation -SkipFooterValidation:$SkipFooterValidation
+            $result = Test-FrontmatterValidation -Paths $Paths -ExcludePaths $ExcludePaths -WarningsAsErrors:$WarningsAsErrors -EnableSchemaValidation:$EnableSchemaValidation -FooterExcludePaths $FooterExcludePaths -SkipFooterValidation:$SkipFooterValidation
         }
 
         # Normalize result: if pipeline output produced an array, extract the ValidationSummary object
